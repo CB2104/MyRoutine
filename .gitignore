@@ -1,0 +1,44 @@
+# Dependencies
+node_modules/
+
+# Production builds and test output
+dist/
+coverage/
+
+# Local caches and generated TypeScript metadata
+.vite/
+.eslintcache
+*.tsbuildinfo
+
+# Environment files and local overrides
+.env
+.env.*
+!.env.example
+*.local
+
+# Deployment metadata
+.vercel/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor settings
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+*.swp
+*.swo
+
+# Operating system files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Implementation brief used only as local context
+CONTEXT_GYM_TRACKER.md
