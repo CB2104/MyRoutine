@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { m } from "motion/react";
 import type { ExerciseDefinition } from "../types/workout";
 
 type ExerciseModalProps = {
@@ -28,20 +29,28 @@ export function ExerciseModal({ exercise, onClose }: ExerciseModalProps) {
       }}
     >
       {exercise ? (
-        <div className="dialog-content">
+        <m.div
+          className="dialog-content"
+          key={exercise.id}
+          initial={{ opacity: 0, y: 14, scale: 0.985 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.26 }}
+        >
           <div className="dialog-heading">
             <div>
               <p className="eyebrow">Guía de técnica</p>
               <h2 id="exercise-dialog-title">{exercise.name}</h2>
             </div>
-            <button
+            <m.button
               className="icon-button"
               type="button"
               onClick={() => dialogRef.current?.close()}
               aria-label="Cerrar guía del ejercicio"
+              whileTap={{ scale: 0.9, rotate: 4 }}
+              whileHover={{ rotate: 4 }}
             >
               ×
-            </button>
+            </m.button>
           </div>
           <img
             className="dialog-gif"
@@ -60,7 +69,7 @@ export function ExerciseModal({ exercise, onClose }: ExerciseModalProps) {
           <p className="reference-name">
             Referencia del dataset: {exercise.referenceName}
           </p>
-        </div>
+        </m.div>
       ) : null}
     </dialog>
   );

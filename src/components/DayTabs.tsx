@@ -1,4 +1,5 @@
 import type { WorkoutDayDefinition, WorkoutDayId } from "../types/workout";
+import { m } from "motion/react";
 
 type DayTabsProps = {
   days: readonly WorkoutDayDefinition[];
@@ -16,19 +17,30 @@ export function DayTabs({
   return (
     <nav className="day-tabs" aria-label="Días de entrenamiento">
       {days.map((day) => (
-        <button
+        <m.button
           className="day-tab"
           data-active={day.id === activeDay}
           type="button"
           key={day.id}
           onClick={() => onSelect(day.id)}
           aria-current={day.id === activeDay ? "page" : undefined}
+          whileTap={{ scale: 0.94 }}
+          whileHover={{ y: -2 }}
+          transition={{ duration: 0.16 }}
         >
-          <span>{day.short}</span>
-          <small>
+          {day.id === activeDay ? (
+            <m.span
+              className="day-tab__active"
+              layoutId="active-day-tab"
+              transition={{ type: "spring", stiffness: 500, damping: 38 }}
+              aria-hidden="true"
+            />
+          ) : null}
+          <span className="day-tab__label">{day.short}</span>
+          <small className="day-tab__progress">
             {completedByDay[day.id]}/{day.exercises.length}
           </small>
-        </button>
+        </m.button>
       ))}
     </nav>
   );

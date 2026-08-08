@@ -1,4 +1,12 @@
 import { useState } from "react";
+import {
+  AnimatePresence,
+  LazyMotion,
+  MotionConfig,
+  domAnimation,
+  m,
+  type Variants,
+} from "motion/react";
 import { DailySummary } from "./components/DailySummary";
 import { DayTabs } from "./components/DayTabs";
 import { ExerciseCard } from "./components/ExerciseCard";
@@ -19,6 +27,21 @@ const TOTAL_EXERCISES = routine.reduce(
   (total, day) => total + day.exercises.length,
   0,
 );
+
+const dayTransition: Variants = {
+  hidden: { opacity: 0, y: 12 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.28, staggerChildren: 0.055 },
+  },
+  exit: { opacity: 0, y: -8, transition: { duration: 0.16 } },
+};
+
+const sectionReveal: Variants = {
+  hidden: { opacity: 0, y: 10 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.24 } },
+};
 
 function App() {
   const weekId = getIsoWeekId();
@@ -70,8 +93,15 @@ function App() {
   }
 
   return (
-    <>
-      <header className="masthead">
+    <MotionConfig reducedMotion="user">
+      <LazyMotion features={domAnimation}>
+      <div className="app-frame">
+      <m.header
+        className="masthead"
+        initial={{ opacity: 0, y: -14 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.38 }}
+      >
         <div className="masthead__rule">
           <span>Developer Chronicle</span>
           <span>{weekId}</span>
@@ -79,10 +109,26 @@ function App() {
         <div className="masthead__title-row">
           <div>
             <p className="edition">Training edition · Vol. 01</p>
-            <h1>My Routine</h1>
+            <m.h1
+              initial={{ letterSpacing: "-0.08em", opacity: 0 }}
+              animate={{ letterSpacing: "-0.045em", opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              My Routine
+            </m.h1>
           </div>
           <div className="masthead__score" aria-label={`${completedTotal} de ${TOTAL_EXERCISES} ejercicios completados`}>
-            <strong>{completedTotal}</strong>
+            <AnimatePresence mode="popLayout" initial={false}>
+              <m.strong
+                key={completedTotal}
+                initial={{ opacity: 0, y: -8, scale: 0.9 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 8, scale: 0.9 }}
+                transition={{ duration: 0.16 }}
+              >
+                {completedTotal}
+              </m.strong>
+            </AnimatePresence>
             <span>/ {TOTAL_EXERCISES}</span>
           </div>
         </div>
@@ -92,7 +138,7 @@ function App() {
           completedByDay={completedByDay}
           onSelect={setActiveDay}
         />
-      </header>
+      </m.header>
 
       <main className="app-shell">
         {!todayDayId ? (
@@ -101,7 +147,20 @@ function App() {
           </p>
         ) : null}
 
-        <section className="day-intro" aria-labelledby="active-day-title">
+        <AnimatePresence mode="wait" initial={false}>
+        <m.div
+          className="day-transition"
+          key={activeDay.id}
+          variants={dayTransition}
+          initial="hidden"
+          animate="visible"
+          exit="exit"
+        >
+        <m.section
+          className="day-intro"
+          aria-labelledby="active-day-title"
+          variants={sectionReveal}
+        >
           <div>
             <p className="eyebrow">{activeDay.weekday} · Sesión {routine.findIndex(({ id }) => id === activeDay.id) + 1}/5</p>
             <h2 id="active-day-title">{activeDay.title}</h2>
@@ -112,9 +171,16 @@ function App() {
             <span>de {activeDay.exercises.length}</span>
           </div>
           <p className="day-note">{activeDay.note}</p>
-        </section>
+        </m.section>
 
-        <section className="exercise-list" aria-label={`Ejercicios de ${activeDay.title}`}>
+        <m.section
+          className="exercise-list"
+          aria-label={`Ejercicios de ${activeDay.title}`}
+          variants={{
+            hidden: {},
+            visible: { transition: { staggerChildren: 0.055 } },
+          }}
+        >
           {activeDay.exercises.map((exercise, index) => {
             const log =
               getLog(activeDay.id, exercise.id) ??
@@ -133,9 +199,11 @@ function App() {
               />
             );
           })}
-        </section>
+        </m.section>
 
         <DailySummary summary={summary} />
+        </m.div>
+        </AnimatePresence>
 
         <WorkoutProgress
           days={routine}
@@ -184,7 +252,9 @@ function App() {
         exercise={modalExercise}
         onClose={() => setModalExercise(null)}
       />
-    </>
+      </div>
+      </LazyMotion>
+    </MotionConfig>
   );
 }
 

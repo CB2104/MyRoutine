@@ -1,4 +1,5 @@
 import type { WorkoutDayDefinition, WorkoutDayId } from "../types/workout";
+import { m } from "motion/react";
 
 type WorkoutProgressProps = {
   days: readonly WorkoutDayDefinition[];
@@ -34,16 +35,24 @@ export function WorkoutProgress({
         aria-valuemax={exerciseTotal}
         aria-valuenow={completedTotal}
       >
-        <span style={{ width: `${percentage}%` }} />
+        <m.span
+          initial={false}
+          animate={{ width: `${percentage}%` }}
+          transition={{ type: "spring", stiffness: 150, damping: 24 }}
+        />
       </div>
       <div className="week-days" aria-label="Detalle semanal">
         {days.map((day) => {
           const completed = completedByDay[day.id];
           const finished = completed === day.exercises.length;
           return (
-            <span key={day.id}>
+            <m.span
+              key={day.id}
+              animate={finished ? { opacity: 1, y: 0 } : { opacity: 0.72, y: 0 }}
+              transition={{ duration: 0.2 }}
+            >
               {day.short} {finished ? "✓" : completed > 0 ? `${completed}/${day.exercises.length}` : "–"}
-            </span>
+            </m.span>
           );
         })}
       </div>

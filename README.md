@@ -28,6 +28,7 @@ Permite guardar peso, repeticiones por serie, RIR, notas y ejercicios completado
 - React 19
 - TypeScript strict
 - Vite
+- Motion for React (evolución de Framer Motion)
 - CSS moderno sin framework de UI
 - React Hooks
 - `localStorage`

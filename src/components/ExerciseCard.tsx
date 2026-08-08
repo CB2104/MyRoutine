@@ -1,4 +1,15 @@
 import type { ExerciseDefinition, ExerciseLog } from "../types/workout";
+import { AnimatePresence, m, type Variants } from "motion/react";
+
+const cardVariants: Variants = {
+  hidden: { opacity: 0, y: 18, scale: 0.985 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { duration: 0.3 },
+  },
+};
 
 type ExerciseCardProps = {
   exercise: ExerciseDefinition;
@@ -40,13 +51,21 @@ export function ExerciseCard({
   const unitLabel = exercise.unit === "seconds" ? "segundos" : "reps";
 
   return (
-    <article className="exercise-card" data-completed={log.completed}>
+    <m.article
+      className="exercise-card"
+      data-completed={log.completed}
+      variants={cardVariants}
+      layout="position"
+    >
       <div className="exercise-card__header">
-        <button
+        <m.button
           className="exercise-media"
           type="button"
           onClick={() => onOpenMedia(exercise)}
           aria-label={`Ver técnica de ${exercise.name}`}
+          whileTap={{ scale: 0.96 }}
+          whileHover={{ scale: 1.025 }}
+          transition={{ duration: 0.18 }}
         >
           <img
             src={exercise.gifUrl}
@@ -54,7 +73,7 @@ export function ExerciseCard({
             loading="lazy"
           />
           <span aria-hidden="true">VER GIF</span>
-        </button>
+        </m.button>
         <div className="exercise-heading">
           <p className="exercise-number">Ejercicio {String(index + 1).padStart(2, "0")}</p>
           <h3>{exercise.name}</h3>
@@ -147,16 +166,30 @@ export function ExerciseCard({
         </label>
       </div>
 
-      <button
+      <m.button
         className="complete-button"
         data-completed={log.completed}
         type="button"
         aria-pressed={log.completed}
         onClick={() => onChange({ completed: !log.completed })}
+        whileTap={{ scale: 0.985 }}
+        animate={log.completed ? { letterSpacing: "0.075em" } : { letterSpacing: "0.04em" }}
+        transition={{ duration: 0.18 }}
       >
-        <span aria-hidden="true">{log.completed ? "✓" : "○"}</span>
+        <AnimatePresence mode="wait" initial={false}>
+          <m.span
+            key={log.completed ? "done" : "pending"}
+            aria-hidden="true"
+            initial={{ scale: 0.4, rotate: -18, opacity: 0 }}
+            animate={{ scale: 1, rotate: 0, opacity: 1 }}
+            exit={{ scale: 0.4, rotate: 18, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 520, damping: 28 }}
+          >
+            {log.completed ? "✓" : "○"}
+          </m.span>
+        </AnimatePresence>
         {log.completed ? "Completado" : "Marcar como completado"}
-      </button>
-    </article>
+      </m.button>
+    </m.article>
   );
 }

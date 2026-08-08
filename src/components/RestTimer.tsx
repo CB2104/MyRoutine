@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { m } from "motion/react";
 
 function formatTime(seconds: number) {
   const minutes = Math.floor(seconds / 60);
@@ -39,16 +40,29 @@ export function RestTimer() {
   }
 
   return (
-    <aside className="rest-timer" data-finished={finished} aria-label="Temporizador de descanso">
+    <m.aside
+      className="rest-timer"
+      data-finished={finished}
+      aria-label="Temporizador de descanso"
+      initial={{ opacity: 0, y: 22 }}
+      animate={{ opacity: 1, y: finished ? -2 : 0, scale: finished ? 1.008 : 1 }}
+      transition={{ type: "spring", stiffness: 300, damping: 28 }}
+    >
       <div className="timer-readout" aria-live="polite">
         <span className="eyebrow">{finished ? "Descanso listo" : "Descanso"}</span>
         <strong>{formatTime(remaining)}</strong>
       </div>
       {[90, 120, 180].map((seconds) => (
-        <button type="button" key={seconds} onClick={() => start(seconds)}>
+        <m.button
+          type="button"
+          key={seconds}
+          onClick={() => start(seconds)}
+          whileTap={{ scale: 0.92 }}
+          whileHover={{ y: -2 }}
+        >
           {seconds === 90 ? "90s" : `${seconds / 60}m`}
-        </button>
+        </m.button>
       ))}
-    </aside>
+    </m.aside>
   );
 }
